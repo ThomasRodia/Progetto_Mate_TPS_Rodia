@@ -1,7 +1,10 @@
+import { createTable } from "./createTable.js";
+
 let data={
     x:[],
     y:[]
 }
+
 function calcola(dati){
     
     let fin={
@@ -19,14 +22,18 @@ function calcola(dati){
         Oxy:0,
         Ox2:0,
         m:0,
-        y:""
+        yRetta:""
     }
-    fin.x=data.x;
+    fin.x=dati.x;
     fin.y=dati.y;
+    fin.YsopS=calcolaMedia(fin.y);
+    fin.XsopS=calcolaMedia(fin.x);
+    fin.Oxy=calcolaCovarianza(fin);
+
     fin.Ox=calcolaDeviazioneStandar(fin.x);
     fin.Oy=calcolaDeviazioneStandar(fin.y);
-    fin.Oxy=calcolaCovarianza(fin.x,fin.y);
-    fin.r=Oxy/(Ox*Oy);
+    
+    fin.r=fin.Oxy/(fin.Ox*fin.Oy);
     if(fin.r==1){
         fin.CL="CLP Perfetta";
     }else if(fin.r==-1){
@@ -46,26 +53,31 @@ function calcola(dati){
     }else if(fin.r==0){
         fin.CL="Nessuna Correlazione Lineare";
     }
-    fin.Ox2=CalcolaOx2(fin.x);
-    fin.m=fin.Oxy/Ox2;
-    fin.YsopS=calcolaMedia(fin.y);
-    fin.YsopS=calcolaMedia(fin.x);
-    fin.y=fin.YsopS+"+"+fin.m+"*(x-"+fin.XsopS+")";
+    fin.Ox2=CalcolaOx2(fin);
+    fin.m=fin.Oxy/fin.Ox2;
+    
+    fin.yRetta=fin.YsopS+"+"+fin.m+"*(x-"+fin.XsopS+")";
+    return fin;
 }
 
 
-function calcolaCovarianza(arrX,arrY){
+function calcolaCovarianza(fin){
+    let arrX=fin.x;
+    let arrY=fin.y;
+    let XsopraSegnato=fin.XsopS;
+    let YsopraSegnato=fin.YsopS
     if(!arrY.length==arrY.length){
         console.log("Valori inseriti mancano X o Y , i dati non sono uguali");
         return -1;
     }
-    let prodotti=calcolaXxY(arrX,arrY);
-    let XsopraSegnato=calcolaMedia(arrX);
-    let YsopraSegnato=calcolaMedia(arrY);
+    fin.xy=calcolaXxY(arrX,arrY);
+    
     let ris=0;
-    for(let i=0;i<prodotti.length;i++){
-     ris+=prodotti[i]/arrX.length;
+    for(let i=0;i<fin.xy.length;i++){
+        console.info( "OXY : "+fin.xy[i]/arrX.length)
+     ris+=fin.xy[i]/arrX.length;
     }
+    console.info(ris);
     ris=ris-(XsopraSegnato*YsopraSegnato);
     return ris;
 }
@@ -89,32 +101,47 @@ function calcolaXxY (arrX,arrY){
 
 function calcolaMedia(arr){
     let media;
-    let somma= 0;
+    let somma = 0;
+    console.info("Array media "+arr);
     for(let i= 0;i<arr.length;i++){
-        somma+=arr[i];
+        somma+=parseInt(arr[i]);
     }
+    console.info("somma " +somma);
+    console.info("lunghezza"+arr.length);
     media=somma/arr.length;
+    console.info("media "+media);
     return media;
 }
+
+
+
 function calcolaDeviazioneStandar(arr){
     let ris=0;
     for(let i=0;i<arr.length;i++){
       ris+=(Math.pow(arr[i],2)/arr.length);
     }
-    ris=ris-Math.pow(arr[i],2)
-    return ris;
+    ris=ris-Math.pow(calcolaMedia(arr),2)
+    return Math.sqrt(ris);
 }
-function CalcolaOx2(arr){
-let x2=[]
-let ris;
-for(let i=0;i<arr.length;i++){
-    x2.push(Math.pow(arr[i],2));
-  }
 
-  for(let i=0;i<arr.length;i++){
-    ris+=x2[i]/arr.length;
+
+
+function CalcolaOx2(fin){
+let ris=0;
+for(let i=0;i<fin.x.length;i++){
+    fin.x2.push(Math.pow(fin.x[i],2));
+  }
+console.info("x2= "+fin.x2);
+  for(let i=0;i<fin.x.length;i++){
+    ris+=fin.x2[i]/fin.x.length;
 }
-ris-=(Math.pow(calcolaMedia(arr),2));
+
+ris-=(Math.pow(fin.XsopS,2));
   return ris;
 }
-//function calcolaCoefficenteDiRelazioneLineare(Oxy,Ox,Oy)
+
+const regressione=document.getElementById("Tabella_Valori");
+let tabella=createTable(regressione);
+tabella.build(data);
+tabella.render();
+tabella.setcallback(calcola);

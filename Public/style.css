@@ -1,0 +1,40 @@
+.titolo{
+    color:black;
+    text-align: center;
+}
+.tabellina{
+    align-items: center;
+}
+.inserimento{
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px; 
+    margin-top: 1rem; 
+}
+#colorHome{
+    background-color:#b0b0ae;
+ }
+ .contenitore {
+    display: flex;
+    justify-content: center; /* Centra orizzontalmente */
+    align-items: center; /* Centra verticalmente */
+    
+}
+
+#calculator {
+    width: 600px;
+    height: 400px;
+}
+#by{
+    color:rgb(80, 80, 80);
+}
+ /*Regola per far scopmapire oggetti HTML*/
+ .hidden{
+    display: none;
+  }
+  
+  /*Regola per far apparire oggetti HTML*/
+  .show{
+    display: block;
+  }

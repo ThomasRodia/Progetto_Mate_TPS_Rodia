@@ -8,21 +8,25 @@ export const createTable = (parentElement) => {
 callback=cb;
    },
     render: () => {
-      
+      const calc= document.getElementById("calculator");
 
               let html = `
                         <div class="container">
-      <form >
-      <input type="text" id="X"  placeholder="inserisci valore X">
-      <input type="text" id="Y"  placeholder="inserisci valore Y">
-      <button type="button" id="Aggiungi" >Aggiungi</button>
-      <button type="button" id="Calcola" >Calcola</button>
+      <form class="inserimento">
+    
+  
+  <input type="text" id="X"aria-label="X" class="form-control " placeholder="X">
+  <input type="text" id="Y"aria-label="Y" class="form-control "placeholder="Y">
+      <button type="button" id="Aggiungi" class="btn btn-primary" >Aggiungi</button>
+      <button type="button" id="Calcola" class="btn btn-success">Calcola</button>
+  <input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single>
+  <button type="button" id="CaricaCSV" class="btn btn-primary">Aggiungi da CSV</button>
     </form>
 
     
     <div class="mt-4" id="tab">
-        <table class="table table-striped">
-            <thead class="">
+        <table class="table table-bordered tabellina ">
+            <thead class="table-dark titolo">
                 <tr>
                     <th scope="col" class="px-6 py-3">
                         X
@@ -32,7 +36,7 @@ callback=cb;
                     </th>
                 </tr>
             </thead>
-            <tbody>`;
+            <tbody class="titiolo">`;
             for(let i=0;i<dati.x.length;i++){
                 
                 html+= `
@@ -62,8 +66,52 @@ dati.y[i] +
               const yinput = document.getElementById("Y");
               const aggiungi=document.getElementById("Aggiungi");
               const calcola=document.getElementById("Calcola");
-
-              aggiungi.onclick = () =>{
+              const CSVButton=document.getElementById("CaricaCSV");
+              const inputFile
+calc.setAttribute("class","hidden");
+CSVButton.onclick = () =>{
+    async () => {
+    handleSubmit = async (event) => {
+        const formData = new FormData();
+        formData.append("file", inputFile.files[0]);
+        const body = formData;
+        body.description = inputDescription.value;
+        const fetchOptions = {
+          method: 'post',
+          body: body
+        };
+        try {
+          const res = await fetch("/upload", fetchOptions);
+          //const pippo=await("/load",fetchOptions);
+          const data = await res.json();
+          link.setAttribute("href", data.url);
+          link.innerText = data.url;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+}
+                aggiungi.onclick = () => {
+                   
+                     console.info("ho cliccato aggiungi");
+                    const task = {
+                        x: xinput.value,
+                        y: yinput.value
+                    };
+                
+                    istance.send({ dati: task })
+                        .then(() => istance.load())
+                        .then(() => {
+                            xinput.value="";
+                            yinput.value="";
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                }
+                /*
+                console.info("prova");
                 dati.x.push(xinput.value);
                 dati.y.push(yinput.value);
                 xinput.value="";
@@ -71,8 +119,9 @@ dati.y[i] +
                 console.info(dati);
                
                 istance.render();
-
-              }
+*/
+              
+            
               calcola.onclick=()=>{
                 let valori=callback(dati);
                 console.info(valori)
@@ -83,28 +132,66 @@ dati.y[i] +
               
       
     },
+    load: function () {
+        return fetch("/lin")
+            .then(response => response.json())
+            .then(json => {
+                console.info("sono qui dentro ");
+                dati = json.dati;
+                istance.render();
+                return json;
+            })
+            .catch(error => { throw error; });
+    },
+    send: function (dat) {
+      console.info(dat);
+        return fetch("/lin/add", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dat)
+        })
+        .then(response => response.json())
+        .catch(error => { throw error; });
+    },
 
     build: (data) => {
         console.info("ho fatto la build");
         dati=data;
       
     },
+    elimina:()=>{
+        return fetch("/lin/del", {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dati)
+        })
+        .then(response => response.json())
+        .catch(error => { throw error; });
+    },
     stampacalcolata:(diz) => {
-            
+        const calc= document.getElementById("calculator");
         let html = `
         <div class="container">
-<form >
-<input type="text" id="X"  placeholder="inserisci valore X" disabled  >
-<input type="text" id="Y"  placeholder="inserisci valore Y" disabled  >
-<button type="button" id="Aggiungi" disabled  >Aggiungi</button>
-<button type="button" id="Calcola" disabled >Calcola</button>
-<button type="button" id="nuova"  >Nuova Serie di dati </button>
+<form class="inserimento">
+
+  <input type="text" id="X "aria-label="X" class="form-control" disabled>
+  <input type="text" id="Y"aria-label="Y" class="form-control" disabled>
+
+<button type="button" id="Aggiungi" class="btn btn-light"  disabled  >Aggiungi</button>
+<button type="button" id="Calcola"class="btn btn-light"  disabled >Calcola</button>
+<input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single disabled>
+  <button type="button" id="CaricaCSV" class="btn btn-light" disabled>Aggiungi da CSV</button>
+<button type="button" id="nuova" class="btn btn-primary" >Nuova Serie di dati </button>
 </form>
 
 
 <div class="mt-4" id="tab">
-<table class="table table-striped">
-<thead class="">
+<table class="table table-bordered titolo">
+<thead class="table-dark">
 <tr>
     <th scope="col" class="px-6 py-3">
         X
@@ -113,7 +200,7 @@ dati.y[i] +
         Y
     </th>
      <th scope="col" class="px-6 py-3">
-        XY
+        X*Y
     </th>
      <th scope="col" class="px-6 py-3">
         X^2
@@ -123,7 +210,7 @@ dati.y[i] +
     </th>
 </tr>
 </thead>
-<tbody>`;
+<tbody class="titiolo">`;
 for(let i=0;i<diz.x.length;i++){
 
 html+= `
@@ -153,12 +240,18 @@ html += `
                 </tbody>
             </table>
         </div>
-<table>
-<thead class="">
-<tr>
-Calcoli fatti
-</tr>
-</thead>
+<table class="table table-bordered titolo">
+    <thead class="table-dark titolo">
+        <tr>
+            <th>
+            Calcoli fatti
+            </th>
+            <th>
+            
+            </th>
+        </tr>
+    </thead>
+
 <tbody>
 <tr>
 <th>Media di X</th>
@@ -209,12 +302,19 @@ Calcoli fatti
 
 parentElement.innerHTML = html;
 const nuova=document.getElementById("nuova");
+calc.setAttribute("class","show");
 nuova.onclick=()=>{
     dati={
         x:[],
         y:[]
     }
-    istance.render();
+    istance.elimina().then(() => {
+        istance.load().then(() => {
+            istance.render();
+        });
+    });
+    
+    
   }
     }
   };

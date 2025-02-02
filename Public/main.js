@@ -1,5 +1,6 @@
 import { createTable } from "./createTable.js";
 
+
 let data={
     x:[],
     y:[]
@@ -60,7 +61,11 @@ function calcola(dati){
     for(let i=0;i<fin.y.length;i++){
         fin.y2.push(Math.pow(fin.y[i],2));
     }
+    var elt = document.getElementById('calculator');
+    var calculator = Desmos.GraphingCalculator(elt);
+    calculator.setExpression({ id: 'Retta', latex: "y="+fin.yRetta });
     return fin;
+    
 }
 
 
@@ -145,6 +150,24 @@ ris-=(Math.pow(fin.XsopS,2));
 
 const regressione=document.getElementById("Tabella_Valori");
 let tabella=createTable(regressione);
-tabella.build(data);
-tabella.render();
+tabella.load().then(() => {
+});
+//tabella.build(data);
+//tabella.render();
 tabella.setcallback(calcola);
+
+
+/*
+// Aggiorna la lista ogni 30 secondi
+setInterval(() => {
+    tabella.load().then(() => {
+        
+    }).catch(error => {
+        console.error(error);
+    });
+}, 30000);
+
+*/
+
+
+

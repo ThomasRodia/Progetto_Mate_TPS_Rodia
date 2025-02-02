@@ -73,7 +73,7 @@ calc.setAttribute("class","hidden");
     console.log("sono dentro");
     
     let handleSubmit = async (event) => {
-        
+  
     const file = inputFile.files[0];
     const nuovoNome = "fileDaEstrarre.csv"; 
 
@@ -84,7 +84,7 @@ calc.setAttribute("class","hidden");
         formData.append("file", fileModificato);
         const body = formData;
         body.description = "CSV Su cui si lavora";
-       console.info(body);
+        console.info(body);
         const fetchOptions = {
           method: 'post',
           body: body
@@ -95,7 +95,7 @@ calc.setAttribute("class","hidden");
           console.log(e);
         }
         inputFile.value="";
-   
+        istance.estraiDaCSV();
     }
     CSVButton.onclick=handleSubmit;
     
@@ -139,6 +139,60 @@ calc.setAttribute("class","hidden");
 
               
       
+    },
+    estraiDaCSV: function () {
+        const reader = new FileReader();
+        let file;
+        fetch("/lin/file")
+            .then(response => response.json())
+            .then(json => {
+               console.log(json);
+               const byteCharacters = atob(json.file); 
+    const byteArray = new Uint8Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArray[i] = byteCharacters.charCodeAt(i);
+    }
+    const blob = new Blob([byteArray], { type: 'text/csv' });
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      const csvContent = reader.result;  
+      console.log(csvContent);
+      let row=csvContent.split("\n")
+      let indicatore=0;
+      if(row[0]=="X"||row[0]=="x"){
+        indicatore=1;
+    }
+    console.log(indicatore);
+      for(let i=indicatore;i<row.length;i++){
+        console.log("row " +row);
+        let valori=row[i].split(",");
+        
+        const task = {
+            x: valori[0],
+            y: valori[1]
+        };
+    console.log(task);
+        istance.send({ dati: task })
+            .then(() => istance.load())
+            .then(() => {
+               
+            })
+            .catch(error => {
+                console.error(error);
+            });
+      }
+     
+    };
+    
+    reader.readAsText(blob);
+   
+                return json;
+                
+            })
+                
+            .catch(error => { throw error; });
+
     },
     load: function () {
         return fetch("/lin")

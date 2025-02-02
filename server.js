@@ -6,6 +6,8 @@ const multer  = require('multer');
 const server = http.createServer(app);
 const bodyParser = require('body-parser');
 const path = require('path');
+
+
 var storage = multer.diskStorage({
    destination: function (req, file, callback) {
        callback(null, path.join(__dirname, "files"));
@@ -23,6 +25,7 @@ let dati = {
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
 app.use("/", express.static(path.join(__dirname, "Public")));
 //-------------------------------------------------
 app.post('/lin/upload', (req, res) => {
@@ -47,7 +50,16 @@ app.post("/lin/add", (req, res) => {
    res.json({result: "Ok"});
 
 });
-
+app.get("/lin/file",(req,res) => {
+   let path="./files/fileDaEstrarre.csv";
+   fs.readFile(path, (err, file) => {
+      if (err) throw err;
+      console.log(file);
+      const base64File = file.toString('base64');
+      res.json({file:base64File})
+      //console.log(data); // Contenuto del file
+    });
+});
 app.get("/lin", (req, res) => {
 
    res.json({dati: dati});

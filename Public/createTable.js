@@ -67,31 +67,39 @@ dati.y[i] +
               const aggiungi=document.getElementById("Aggiungi");
               const calcola=document.getElementById("Calcola");
               const CSVButton=document.getElementById("CaricaCSV");
-              const inputFile
+              const inputFile=document.getElementById("file");
 calc.setAttribute("class","hidden");
-CSVButton.onclick = () =>{
-    async () => {
-    handleSubmit = async (event) => {
+
+    console.log("sono dentro");
+    
+    let handleSubmit = async (event) => {
+        
+    const file = inputFile.files[0];
+    const nuovoNome = "fileDaEstrarre.csv"; 
+
+   
+        const fileModificato = new File([file], nuovoNome, { type: file.type });
         const formData = new FormData();
-        formData.append("file", inputFile.files[0]);
+        console.log(fileModificato);
+        formData.append("file", fileModificato);
         const body = formData;
-        body.description = inputDescription.value;
+        body.description = "CSV Su cui si lavora";
+       console.info(body);
         const fetchOptions = {
           method: 'post',
           body: body
         };
         try {
-          const res = await fetch("/upload", fetchOptions);
-          //const pippo=await("/load",fetchOptions);
-          const data = await res.json();
-          link.setAttribute("href", data.url);
-          link.innerText = data.url;
+          const res = await fetch("/lin/upload", fetchOptions);
         } catch (e) {
           console.log(e);
         }
-      }
+        inputFile.value="";
+   
     }
-}
+    CSVButton.onclick=handleSubmit;
+    
+
                 aggiungi.onclick = () => {
                    
                      console.info("ho cliccato aggiungi");

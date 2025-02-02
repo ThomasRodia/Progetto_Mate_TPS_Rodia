@@ -49,7 +49,7 @@ function calcola(dati){
     }else if(fin.r<-0.3&&fin.r>-0.7){
         fin.CL="CLN Moderata";
     }else if(fin.r<0&&fin.r>-0.3){
-        fin.CL="CLM Debole";
+        fin.CL="CLN Debole";
     }else if(fin.r==0){
         fin.CL="Nessuna Correlazione Lineare";
     }
@@ -57,6 +57,9 @@ function calcola(dati){
     fin.m=fin.Oxy/fin.Ox2;
     
     fin.yRetta=fin.YsopS+"+"+fin.m+"*(x-"+fin.XsopS+")";
+    for(let i=0;i<fin.y.length;i++){
+        fin.y2.push(Math.pow(fin.y[i],2));
+    }
     return fin;
 }
 

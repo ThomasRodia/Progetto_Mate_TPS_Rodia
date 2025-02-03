@@ -64,9 +64,8 @@ function calcola(dati){
     for(let i=0;i<fin.y.length;i++){
         fin.y2.push(Math.pow(fin.y[i],2));
     }
-    var elt = document.getElementById('calculator');
-    var calculator = Desmos.GraphingCalculator(elt);
-    calculator.setExpression({ id: 'Retta', latex: "y="+fin.yRetta });
+    //let elt = document.getElementById('calculator');
+   
     return fin;
     
 }

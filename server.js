@@ -22,12 +22,17 @@ let dati = {
     x:[],
     y:[]
 };
-
+let datiStorico={
+   data:"",
+   x:[],
+   y:[]
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use("/", express.static(path.join(__dirname, "Public")));
-//-------------------------------------------------
+app.use("/assets", express.static(path.join(__dirname, "Public/assets")));
+
 app.post('/lin/upload', (req, res) => {
    upload(req, res, (err) => {
        
@@ -35,18 +40,23 @@ app.post('/lin/upload', (req, res) => {
    res.json({url: "./files/" + req.file.filename});    
  })
 });
-//----------------------------------------------------------
+
 app.post("/lin/add", (req, res) => {
  
    const x=req.body.dati.x;
    const y=req.body.dati.y;
-   
-   
-
-   
-
    dati.x.push(x);
    dati.y.push(y);
+   res.json({result: "Ok"});
+
+});
+app.post("/lin/delete", (req, res) => {
+ console.log("sono dentro la delete")
+ const indice = req.body.index;
+ dati.x.splice(indice, 1);
+ dati.y.splice(indice, 1);
+ 
+console.info(dati);
    res.json({result: "Ok"});
 
 });
@@ -65,7 +75,11 @@ app.get("/lin", (req, res) => {
    res.json({dati: dati});
 
 });
-/*
+app.get("/lin/storico", (req, res) => {
+
+   res.json({dati: datiStorico});
+
+});
 app.put("/todo/complete", (req, res) => {
 
    const todo = req.body;
@@ -93,7 +107,7 @@ app.put("/todo/complete", (req, res) => {
    res.json({result: "Ok"});
 
 });
-*/
+
 
 app.delete("/lin/del", (req, res) => {
 
@@ -104,6 +118,7 @@ app.delete("/lin/del", (req, res) => {
    res.json({result: "Ok"});  
 
 })
+
 
 server.listen(80, () => {
   console.log("- server running");

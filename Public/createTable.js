@@ -8,24 +8,24 @@ export const createTable = (parentElement) => {
 callback=cb;
    },
     render: () => {
-      const calc= document.getElementById("calculator");
+     // const calc= document.getElementById("calculator");
 
               let html = `
                         <div class="container">
       <form class="inserimento">
     
   
-  <input type="text" id="X"aria-label="X" class="form-control " placeholder="X">
-  <input type="text" id="Y"aria-label="Y" class="form-control "placeholder="Y">
+  <input type="number" id="X"aria-label="X" class="form-control in" placeholder="X">
+  <input type="number" id="Y"aria-label="Y" class="form-control in"placeholder="Y">
       <button type="button" id="Aggiungi" class="btn btn-primary" >Aggiungi</button>
       <button type="button" id="Calcola" class="btn btn-success">Calcola</button>
   <input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single>
-  <button type="button" id="CaricaCSV" class="btn btn-primary">Aggiungi da CSV</button>
+  <button type="button" id="CaricaCSV" class="btn btn-primary b1">Aggiungi da CSV</button>
     </form>
 
     
     <div class="mt-4" id="tab">
-        <table class="table table-bordered tabellina ">
+        <table class="table table-bordered tabellina radius">
             <thead class="table-dark titolo">
                 <tr>
                     <th scope="col" class="px-6 py-3">
@@ -33,6 +33,9 @@ callback=cb;
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Y
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        CANCELLA
                     </th>
                 </tr>
             </thead>
@@ -47,6 +50,9 @@ dati.x[i] +
 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">` +
 dati.y[i] +
 `</th>
+<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"><button class="btn btn-danger titolo" id="elimina">Elimina</button
+
+</th>
                     
                 </tr>`;
             }
@@ -68,7 +74,7 @@ dati.y[i] +
               const calcola=document.getElementById("Calcola");
               const CSVButton=document.getElementById("CaricaCSV");
               const inputFile=document.getElementById("file");
-calc.setAttribute("class","hidden");
+//calc.setAttribute("class","hidden");
 
     console.log("sono dentro");
     
@@ -98,14 +104,28 @@ calc.setAttribute("class","hidden");
         istance.estraiDaCSV();
     }
     CSVButton.onclick=handleSubmit;
-    
+    document.querySelectorAll("#elimina").forEach((button, index) => {
+        button.onclick = () => {
+               istance.delete(index);
+            //this.delete(todos[index].id).then(() => this.load()).catch(console.error);
+        };
+    });
 
                 aggiungi.onclick = () => {
                    
                      console.info("ho cliccato aggiungi");
+                     let xv=xinput.value;
+                     let yv=yinput.value;
+                     if(xv==null||xv==undefined||xv==""){
+                        xv='0';
+                     }
+                     if(yv==null||yv==undefined||yv==""){
+                        yv='0';
+                     }
+                     console.log(yv);
                     const task = {
-                        x: xinput.value,
-                        y: yinput.value
+                        x: xv,
+                        y: yv
                     };
                 
                     istance.send({ dati: task })
@@ -118,17 +138,7 @@ calc.setAttribute("class","hidden");
                             console.error(error);
                         });
                 }
-                /*
-                console.info("prova");
-                dati.x.push(xinput.value);
-                dati.y.push(yinput.value);
-                xinput.value="";
-                yinput.value="";
-                console.info(dati);
-               
-                istance.render();
-*/
-              
+                
             
               calcola.onclick=()=>{
                 let valori=callback(dati);
@@ -139,6 +149,17 @@ calc.setAttribute("class","hidden");
 
               
       
+    },
+    delete:function(index){
+         fetch("/lin/delete", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({index:index})
+        }).then(response => 
+            istance.load()
+        )
     },
     estraiDaCSV: function () {
         const reader = new FileReader();
@@ -235,24 +256,24 @@ calc.setAttribute("class","hidden");
         .catch(error => { throw error; });
     },
     stampacalcolata:(diz) => {
-        const calc= document.getElementById("calculator");
+        
         let html = `
         <div class="container">
 <form class="inserimento">
 
-  <input type="text" id="X "aria-label="X" class="form-control" disabled>
-  <input type="text" id="Y"aria-label="Y" class="form-control" disabled>
+  <input type="number" id="X "aria-label="X" class="form-control in" disabled>
+  <input type="number" id="Y"aria-label="Y" class="form-control in" disabled>
 
 <button type="button" id="Aggiungi" class="btn btn-light"  disabled  >Aggiungi</button>
 <button type="button" id="Calcola"class="btn btn-light"  disabled >Calcola</button>
 <input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single disabled>
-  <button type="button" id="CaricaCSV" class="btn btn-light" disabled>Aggiungi da CSV</button>
-<button type="button" id="nuova" class="btn btn-primary" >Nuova Serie di dati </button>
+  <button type="button" id="CaricaCSV" class="btn btn-light b1" disabled>Aggiungi da CSV</button>
+<button type="button" id="nuova" class="btn btn-primary b1" >Calcola nuovi dati </button>
 </form>
 
 
 <div class="mt-4" id="tab">
-<table class="table table-bordered titolo">
+<table class="table table-bordered titolo radius">
 <thead class="table-dark">
 <tr>
     <th scope="col" class="px-6 py-3">
@@ -302,7 +323,13 @@ html += `
                 </tbody>
             </table>
         </div>
-<table class="table table-bordered titolo">
+        <div class="container">
+        <div class="row">
+      
+      <div class="col">
+       
+      
+<table class="table table-bordered titolo radius">
     <thead class="table-dark titolo">
         <tr>
             <th>
@@ -359,12 +386,23 @@ html += `
 
 </tbody>
 </table>
+</div>
+     <div class="col">
+     <div>
+       <div class="contenitore">
+        <div id="calculator" class="show"></div>
+      </div>
+     
+    </div>
     </div>
         `;
 
 parentElement.innerHTML = html;
+const calc= document.getElementById("calculator");
 const nuova=document.getElementById("nuova");
 calc.setAttribute("class","show");
+let calculator = Desmos.GraphingCalculator(calc);
+calculator.setExpression({ id: 'Retta', latex: "y="+diz.yRetta });
 nuova.onclick=()=>{
     dati={
         x:[],

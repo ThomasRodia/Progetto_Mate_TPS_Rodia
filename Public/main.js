@@ -1,5 +1,7 @@
 import { createTable } from "./createTable.js";
+//import { createNavigator } from "./navigator.js";
 
+//const navigator = createNavigator(document.querySelector("#container"));
 
 let data={
     x:[],
@@ -23,7 +25,8 @@ function calcola(dati){
         Oxy:0,
         Ox2:0,
         m:0,
-        yRetta:""
+        yRetta:"",
+        Data: new Date()
     }
     fin.x=dati.x;
     fin.y=dati.y;
@@ -152,8 +155,6 @@ const regressione=document.getElementById("Tabella_Valori");
 let tabella=createTable(regressione);
 tabella.load().then(() => {
 });
-//tabella.build(data);
-//tabella.render();
 tabella.setcallback(calcola);
 
 

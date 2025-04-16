@@ -1,30 +1,40 @@
+.r-logo {
+    text-align: right;
+}
+
+.bottone-storico{
+    text-align: right;
+}
+
 .titolo{
     color:black;
-    text-align: center;
+    text-align: center !important;
 }
 .titolo2{
     color:black;
     text-align: left;
 }
 .Logo{
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
 
 }
 .Logo2{
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     align-items: right;
 
 }
 .tabellina {
     width: 100%;
     table-layout: fixed;
+    
 }
 
 .tabellina th, .tabellina td {
-    width: 33.33%; 
-    text-align: center;
+    text-align: center !important; /* Forza il testo al centro */
+    vertical-align: middle; /* Per allineare verticalmente */
+    width: 33.33%;
     padding: 10px;
 }
 .inserimento{
@@ -108,10 +118,31 @@
     width: 25rem !important;
    
 }
-.pieDiPagina{
-    background-color: black;
-    
+/* Imposta il corpo della pagina per occupare tutta l'altezza della finestra */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
+
+/* Il contenuto occuperà lo spazio disponibile, spingendo il footer in basso */
+.contenuto {
+    flex: 1;
+}
+
+/* Footer sempre in fondo alla pagina */
+.pieDiPagina {
+    background-color: #000000;
+    color: white;
+    text-align: left;
+    padding: 10px;
+}
+
 .testoBianco{
     color:white;
+}
+.i-upload{
+    width:30px;
+    height: 30px;
 }

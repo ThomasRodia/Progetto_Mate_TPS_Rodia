@@ -1,4 +1,4 @@
-export const createTable = (parentElement) => {
+export const createTableStorico = (parentElement) => {
     let dati=null;
     let istance;
     let callback;
@@ -8,15 +8,15 @@ export const createTable = (parentElement) => {
 callback=cb;
    },
     render: () => {
-      const calc= document.getElementById("calculator");
 
+      
               let html = `
                         <div class="container">
      
 
     
     <div class="mt-4" id="tab">
-        <table class="table table-bordered tabellina ">
+        <table class="table table-bordered tabellina radius ">
             <thead class="table-dark titolo">
                 <tr>
                     <th scope="col" class="px-6 py-3">
@@ -34,6 +34,7 @@ callback=cb;
                 </tr>
             </thead>
             <tbody class="titiolo">`;
+
             for(let i=0;i<dati.length;i++){
                 
                 html+= `
@@ -47,7 +48,7 @@ dati[i].x +
 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">` +
 dati[i].y +
 `</th>
-<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"><button class="btn btn-danger titolo" id="seleziona">SELEZIONA</button
+<th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"><a href="./index.html"><button class="btn btn-dark titolo" id="seleziona">SELEZIONA</button></a>
 
 </th>
                     
@@ -62,6 +63,7 @@ dati[i].y +
                         </div>
                     </div>
                         `;
+                       // console.info(html);
 
               parentElement.innerHTML = html;
 
@@ -75,35 +77,25 @@ dati[i].y +
               
       
     },
-    select:function(){},
-    
+    select: function (indice) {
+        let xv = dati[indice].x;
+        let yv = dati[indice].y;
+        console.info({ x: xv, y: yv });
+        let fin=callback({ x: xv, y: yv })
+        localStorage.setItem('datiCalcolati', JSON.stringify(fin));
+    },
+
     load: function () {
-        return fetch("/lin")
+        return fetch("/lin/getstorico")
             .then(response => response.json())
             .then(json => {
-                console.info("sono qui dentro ");
-                dati = json.dati;
+                console.info("Dati caricati:", json);
+                dati = json;
                 istance.render();
                 return json;
             })
-            .catch(error => { throw error; });
+            .catch(error => { console.error("Errore nel caricamento:", error); });
     }
-    /*,
-    send: function (dat) {
-      console.info(dat);
-        return fetch("/lin/add", {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(dat)
-        })
-        .then(response => response.json())
-        .catch(error => { throw error; });
-    }
-
-    */
-    
   };
   return istance;
 };

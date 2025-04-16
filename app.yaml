@@ -1,2 +1,0 @@
-runtime: nodejs18 # o la versione di Node.js che usi
-service: default

@@ -9,7 +9,14 @@ callback=cb;
    },
     render: () => {
      // const calc= document.getElementById("calculator");
-
+ // Recupera i dati calcolati da localStorage
+ const datiCalcolati = JSON.parse(localStorage.getItem('datiCalcolati'));
+console.info(datiCalcolati);
+ if (datiCalcolati) {
+     // Se ci sono dati calcolati, chiama la funzione stampacalcolata
+     istance.stampacalcolata(datiCalcolati);
+     localStorage.setItem('datiCalcolati', null)
+ }else{
               let html = `
                         <div class="container">
       <form class="inserimento">
@@ -17,17 +24,17 @@ callback=cb;
   
   <input type="number" id="X"aria-label="X" class="form-control in" placeholder="X">
   <input type="number" id="Y"aria-label="Y" class="form-control in"placeholder="Y">
-      <button type="button" id="Aggiungi" class="btn btn-primary" >Aggiungi</button>
+      <button type="button" id="Aggiungi" class="btn btn-dark" >Aggiungi</button>
       <button type="button" id="Calcola" class="btn btn-success">Calcola</button>
   <input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single>
-  <button type="button" id="CaricaCSV" class="btn btn-primary b1">Aggiungi da CSV</button>
+  <button type="button" id="CaricaCSV" class="btn btn-dark b1"><img class="i-upload" src="assets/images/csv.png" alt="tab" /> Aggiungi da CSV</button>
     </form>
 
     
     <div class="mt-4" id="tab">
         <table class="table table-bordered tabellina radius">
             <thead class="table-dark titolo">
-                <tr>
+                <tr >
                     <th scope="col" class="px-6 py-3">
                         X
                     </th>
@@ -143,10 +150,38 @@ dati.y[i] +
               calcola.onclick=()=>{
                 let valori=callback(dati);
                 console.info(valori)
+              
+
+                // Prendi la data corrente
+                let currentDate = new Date().toISOString().split('T')[0];  // 'YYYY-MM-DD'
+            
+                // Crea l'oggetto da inviare
+                const dataToSave = {
+                    x: dati.x,
+                    y: dati.y,
+                    date: currentDate
+                };
+            
+                // Invia i dati al back-end per salvarli nel database
+                fetch('/lin/saveData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSave)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dati salvati con successo nel DB:', data);
+                    istance.stampacalcolata(valori);  // Procedi con il calcolo e la visualizzazione dei risultati
+                })
+                .catch(error => {
+                    console.error('Errore nel salvataggio dei dati:', error);
+                });
                 istance.stampacalcolata(valori);
               }
               
-
+            }
               
       
     },
@@ -256,7 +291,7 @@ dati.y[i] +
         .catch(error => { throw error; });
     },
     stampacalcolata:(diz) => {
-        
+        console.info(diz);
         let html = `
         <div class="container">
 <form class="inserimento">
@@ -267,13 +302,13 @@ dati.y[i] +
 <button type="button" id="Aggiungi" class="btn btn-light"  disabled  >Aggiungi</button>
 <button type="button" id="Calcola"class="btn btn-light"  disabled >Calcola</button>
 <input id="file" name="file" class="form-control "placeholder="Insercisci CSV"type="file" single disabled>
-  <button type="button" id="CaricaCSV" class="btn btn-light b1" disabled>Aggiungi da CSV</button>
-<button type="button" id="nuova" class="btn btn-primary b1" >Calcola nuovi dati </button>
+  <button type="button" id="CaricaCSV" class="btn btn-light b1" disabled><img class="i-upload" src="assets/images/csv.png" alt="tab" /> Aggiungi da CSV</button>
+<button type="button" id="nuova" class="btn btn-dark b1" >Calcola nuovi dati </button>
 </form>
 
 
 <div class="mt-4" id="tab">
-<table class="table table-bordered titolo radius">
+<table class="table table-bordered radius tabellina">
 <thead class="table-dark">
 <tr>
     <th scope="col" class="px-6 py-3">
@@ -396,11 +431,12 @@ html += `
     </div>
     </div>
         `;
-
+console.info(html);
 parentElement.innerHTML = html;
 const calc= document.getElementById("calculator");
 const nuova=document.getElementById("nuova");
 calc.setAttribute("class","show");
+
 let calculator = Desmos.GraphingCalculator(calc);
 calculator.setExpression({ id: 'Retta', latex: "y="+diz.yRetta });
 nuova.onclick=()=>{

@@ -1,4 +1,5 @@
 import { createTable } from "./createTable.js";
+import { createTableStorico } from "./createStorico.js";
 //import { createNavigator } from "./navigator.js";
 
 //const navigator = createNavigator(document.querySelector("#container"));
@@ -89,6 +90,19 @@ function calcolaCovarianza(fin){
     }
     console.info(ris);
     ris=ris-(XsopraSegnato*YsopraSegnato);
+    fetch('/lin/addstorico', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            x: fin.x,
+            y: fin.y
+        })
+    })
+    .then(response => response.json())
+    .then(result => console.log("Risultato:", result))
+    .catch(error => console.error("Errore nella fetch:", error));
     return ris;
 }
 
@@ -156,6 +170,13 @@ tabella.load().then(() => {
 });
 tabella.setcallback(calcola);
 
+const storico=document.getElementById("Storico");
+let tabellaStorico=createTableStorico(storico);
+//tabellaStorico.build();
+tabellaStorico.load().then(() => {
+    tabellaStorico.render();
+});
+tabellaStorico.setcallback(calcola);
 
 /*
 // Aggiorna la lista ogni 30 secondi
